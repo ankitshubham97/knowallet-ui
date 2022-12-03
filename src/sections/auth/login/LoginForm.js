@@ -47,8 +47,12 @@ export function LoginForm() {
     chain: ""
   });
 
-  const [showResult, setShowResult] = useState(true);
+  const [showResult, setShowResult] = useState(false);
   const [variantName, setVariantName] = useState([]);
+  const [callData, setCallData] = useState([]);
+  const [chainName, setChainName] = useState([]);
+  const [contract, setContract] = useState([]);
+  const [chainLink, setChainLink] = useState([]);
   const [networkName, setNetworkName] = useState([]);
   const handleSubmit = async (e) => {
     console.log("called here")
@@ -74,6 +78,7 @@ export function LoginForm() {
       else {
         toast.success("Verification is successful", { position: toast.POSITION.TOP_CENTER });
         setShowResult(true);
+        setLink("https://" + chainLink + contract)
       }
     } catch (error) {
       toast.error("Verification is unsuccessful, Please try again", { position: toast.POSITION.TOP_CENTER });
@@ -91,7 +96,7 @@ export function LoginForm() {
   };
   const handleClick = () => {
     setOpen(true);
-    navigator.clipboard.writeText('');
+    navigator.clipboard.writeText(callData);
   };
   const handleNetworkChange = (event) => {
     setNetworkName(event.target.value);
@@ -198,7 +203,7 @@ export function LoginForm() {
         <>
 
           <a
-            href="https://www.yahoo.com/"
+            href={link}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -227,15 +232,7 @@ export function LoginForm() {
 
                 truncatedEndingComponent={"... "}
               >
-                Put labore et dolore magna amet, consectetur adipiscing elit,
-                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex Lorem ipsum dolor sit amet, consectetur adipiscing
-                elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                callData
               </ShowMoreText>
 
             </div>
