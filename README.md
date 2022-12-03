@@ -6,3 +6,7 @@
 - [ ] handle responses and raise a toast for verify
 - [ ] handle responses and raise a toast for kyc
 - [ ] show the detailed response for verify
+- [ ] Landing page
+- [ ] ENS name
+- [ ] metamask snap
+
