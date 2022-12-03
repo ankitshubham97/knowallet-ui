@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, OutlinedInput, InputLabel, ListItemText } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { CameraFeed } from '../../CameraFeed/CameraFeed';
@@ -32,9 +33,55 @@ const variants = [
 export function MetamaskForm() {
     const navigate = useNavigate();
 
-    const handleClick = () => {
-        navigate('/dashboard', { replace: true });
+    const [postMForm, setMForm] = useState({
+        walleAddress: "0x9dC36499A0aB380eeaC69De651811B68beb0a783",
+        selfieBase64String: "",
+
+    });
+
+    const url = "http://ec2-13-233-6-217.ap-south-1.compute.amazonaws.com:3000/users";
+
+    const createPost = async (post) => {
+        try {
+            const res = await axios.post(url, post, {
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                }
+            });
+            console.log(res);
+        } catch (error) {
+            console.log(error.message);
+        }
     };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        createPost(postMForm);
+    };
+
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        const base64 = await convertToBase64(file);
+        console.log(base64);
+        setMForm({ ...postMForm, selfieBase64String: base64 });
+        setMForm({ ...postMForm, passportBase64String: base64 });
+    };
+
+    // const handleClick = () => {
+    //     navigate('/dashboard', { replace: true });
+    // };
     const [variantName, setVariantName] = useState([]);
     const handleChange = (event) => {
         const {
@@ -79,8 +126,16 @@ export function MetamaskForm() {
                     I agree the terms and conditions
                 </Link>
             </Stack>
+            <input
+                type="file"
+                label="Image"
+                name="selfieBase64String"
+                accept=".jpeg, .png, .jpg"
+                onChange={(e) => handleFileUpload(e)}
+            />
 
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
+
+            <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
                 Submit Details for KYC
             </LoadingButton>
         </>
