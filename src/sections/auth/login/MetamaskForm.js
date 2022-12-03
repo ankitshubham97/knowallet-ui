@@ -1,13 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, OutlinedInput, InputLabel, ListItemText } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Camera from 'react-html5-camera-photo';
-
 import 'react-html5-camera-photo/build/css/index.css';
 import { da } from 'date-fns/locale';
 
+import { ToastContainer, toast } from 'material-react-toastify';
+import { url } from '../../../constants';
+
+
+import 'material-react-toastify/dist/ReactToastify.css';
+
+toast.configure()
 const ITEM_HEIGHT = 52;
 const ITEM_PADDING_TOP = 12;
 const MenuProps = {
@@ -32,6 +38,38 @@ const variants = [
 ];
 
 export function MetamaskForm() {
+
+    const [form, showForm] = useState(false);
+
+    useEffect(() => {
+
+        async function fetchData() {
+            try {
+                const res = await axios.get(`${url}0x9dC36499A0aB380eeaC69De651811B68beb0a783`, {
+                    headers: {
+                        "Access-Control-Allow-Origin": "*",
+                    }
+                });
+
+                if (res.data.code === 400) {
+                    showForm(true);
+                } else {
+                    toast.success("You are verified", { position: toast.POSITION.TOP_CENTER });
+                    showForm(false);
+                }
+
+
+            } catch (error) {
+
+                toast.error("An error occured", { position: toast.POSITION.TOP_CENTER });
+                console.log(error.message);
+                showForm(true);
+            }
+        }
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const navigate = useNavigate();
 
     const [postMForm, setMForm] = useState({
@@ -39,8 +77,6 @@ export function MetamaskForm() {
         selfieBase64String: "",
 
     });
-
-    const url = "https://api.app.knowallet.xyz/users/";
 
     const handleSubmit = async (e) => {
         console.log("called here")
@@ -54,10 +90,20 @@ export function MetamaskForm() {
                 }
             });
             console.log(res);
+            if (res.data.code === 500) {
+                toast.error("KYC verification failed", { position: toast.POSITION.TOP_CENTER });
+                showForm(true);
+            } else {
+                toast.success("Your account is now KYC verified", { position: toast.POSITION.TOP_CENTER });
+                showForm(false);
+            }
+
         } catch (error) {
+            toast.error("KYC verification failed", { position: toast.POSITION.TOP_CENTER });
             console.log(error.message);
         }
         console.log("done here")
+
         //   createPost(postMForm);
     };
     const handleTakePhoto = async (dataUri) => {
@@ -90,38 +136,42 @@ export function MetamaskForm() {
 
 
     return (
-        <>
-            <Stack spacing={3}>
+        form ?
+            <>
+                <Stack spacing={3}>
 
-                <div className="App">
+                    <div className="App">
 
-                    <p>Capture image from USB webcamera and upload to form</p>
-                    <Camera
-                        onTakePhoto={(dataUri) => handleTakePhoto(dataUri)}
-                    />
-                </div>
+                        <p>Capture image from USB webcamera and upload to form</p>
+                        <Camera
+                            onTakePhoto={(dataUri) => handleTakePhoto(dataUri)}
+                        />
+                    </div>
 
-            </Stack>
-            <input
-                type="file"
-                label="Image"
-                name="selfieBase64String"
-                accept=".jpeg, .png, .jpg"
-                onChange={(e) => handleFileUpload(e)}
-            />
-
-
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-                <Checkbox name="remember" label="Remember me" />
-                <Link variant="subtitle2" underline="hover">
-                    I agree the terms and conditions
-                </Link>
-            </Stack>
+                </Stack>
+                <input
+                    type="file"
+                    label="Image"
+                    name="selfieBase64String"
+                    accept=".jpeg, .png, .jpg"
+                    onChange={(e) => handleFileUpload(e)}
+                />
 
 
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
-                Submit Details for KYC
-            </LoadingButton>
-        </>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+                    <Checkbox name="remember" label="Remember me" />
+                    <Link variant="subtitle2" underline="hover">
+                        I agree the terms and conditions
+                    </Link>
+                </Stack>
+
+
+                <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
+                    Submit Details for KYC
+                </LoadingButton>
+            </> :
+            <>
+                <h1>You are already verified</h1>
+            </>
     );
 }

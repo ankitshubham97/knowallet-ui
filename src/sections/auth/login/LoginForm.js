@@ -1,9 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, OutlinedInput, InputLabel, ListItemText } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { ToastContainer, toast } from 'material-react-toastify';
+import { url } from '../../../constants';
 
 
+
+import 'material-react-toastify/dist/ReactToastify.css';
+
+toast.configure()
 const ITEM_HEIGHT = 52;
 const ITEM_PADDING_TOP = 12;
 const MenuProps = {
@@ -18,28 +25,63 @@ const variants = [
   {
     id: 3,
     name: 'Is Age above 18?',
-    cover: null,
+
   },
   {
     id: 10,
     name: 'Is user from Asia?',
-    cover: null,
   },
 ];
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const [postForm, setForm] = useState({
+    walletAddress: "",
+    questionId: "",
 
-  const handleClick = () => {
-    navigate('/dashboard', { replace: true });
-  };
+  });
+
+  const notify = () => toast("Verification failed for the wallet address");
   const [variantName, setVariantName] = useState([]);
+  const handleSubmit = async (e) => {
+    console.log("called here")
+    console.log(postForm);
+    e.preventDefault();
+    try {
+      console.log("inside this")
+
+      const res = await axios.post(`${url}verify`, postForm, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        }
+      });
+      console.log(res);
+      if (res.data.code === 404) {
+        toast.error("Verification is unsuccessful", { position: toast.POSITION.TOP_CENTER });
+      }
+      else {
+        toast.success("Verification is successful", { position: toast.POSITION.TOP_CENTER });
+      }
+    } catch (error) {
+      toast.error("Verification is unsuccessful", { position: toast.POSITION.TOP_CENTER });
+      console.log(error.message);
+    }
+
+
+  };
+  const handleTextChange = (event) => {
+    setForm({
+      ...postForm,
+      walletAddress: event.target.value,
+    });
+  };
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
 
-    console.log(value);
+    console.log(value[0].id);
+    setForm({ ...postForm, questionId: value[0].id });
 
     const filterdValue = value.filter(
       (item) => variantName.findIndex((o) => o.id === item.id) >= 0
@@ -59,7 +101,7 @@ export default function LoginForm() {
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="text" label="Wallet address" />
+        <TextField name="text" label="Wallet address" onChange={handleTextChange} />
         <FormControl sx={{ m: 5, width: 485 }}>
           <InputLabel id="demo-multiple-checkbox-label">Questions</InputLabel>
           <Select
@@ -94,7 +136,7 @@ export default function LoginForm() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
+      <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
         Verify
       </LoadingButton>
     </>
