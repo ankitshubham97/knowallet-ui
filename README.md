@@ -10,5 +10,7 @@
 - [ ] Landing page
 - [ ] ipfs changes in kyc screen
 - [ ] navbar issues
+- [ ] valist homepage and deployment
+- [ ] assets
 - [ ] metamask snap
 
