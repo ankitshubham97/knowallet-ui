@@ -4,15 +4,10 @@
     box-sizing:border-box;
   }
   body {
-    font-family:"Roboto",sans-serif;
+   
     background:#f0f2f7;
   }
-  .container {
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-  }
+
   .label {
     padding:10px;
     font-size:18px;

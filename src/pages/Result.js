@@ -42,7 +42,7 @@ export default function ResultPage() {
 
     return (
         <>
-
+           
             <StyledRoot>
                 <Logo
                     sx={{
@@ -62,6 +62,7 @@ export default function ResultPage() {
                 )}
 
                 <Container maxWidth="sm">
+              
                     <StyledContent>
                         <Typography variant="h4" gutterBottom>
                             Verify Authentictiy

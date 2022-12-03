@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, OutlinedInput, InputLabel, ListItemText } from '@mui/material';
+import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, OutlinedInput, InputLabel, ListItemText, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { ToastContainer, toast } from 'material-react-toastify';
+import { queryENSForETHAddress } from '../../../stores/ensStore';
+
 import { url } from '../../../constants';
 import GetAccount from '../../../hooks/account';
-
+import './result.css';
 
 import 'material-react-toastify/dist/ReactToastify.css';
 
@@ -34,10 +36,23 @@ const variants = [
 ];
 
 export default function LoginForm() {
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const account = GetAccount();
   console.log("Requester wallet address: ");
+  const [ethAddress, setETHAddress] = useState('0')
+
   console.log(account.props.children);
+  useEffect(() => {
+
+    async function fetchData() {
+      setETHAddress(await queryENSForETHAddress("srijanshetty.eth"));
+    }
+    fetchData();
+    console.log("Requester wallet address: ");
+    console.log(ethAddress);
+
+  }, []);
 
   const [postForm, setForm] = useState({
     userWalletAddress: "0x4ad53d31Cb104Cf5f7622f1AF8Ed09C3ca980523",
@@ -46,7 +61,7 @@ export default function LoginForm() {
     chain: ""
   });
 
-
+  const [showResult, setShowResult] = useState(true);
   const [variantName, setVariantName] = useState([]);
   const [networkName, setNetworkName] = useState([]);
   const handleSubmit = async (e) => {
@@ -72,6 +87,10 @@ export default function LoginForm() {
     }
 
 
+  };
+  const handleClick = () => {
+    setOpen(true);
+    navigator.clipboard.writeText(window.location.toString());
   };
   const handleNetworkChange = (event) => {
     setNetworkName(event.target.value);
@@ -146,11 +165,11 @@ export default function LoginForm() {
             label="Network"
             onChange={handleNetworkChange}
           >
-            <MenuItem value={"Polygon"}>Polygon</MenuItem>
-            <MenuItem value={"Gnosis"}>Gnosis</MenuItem>
+            <MenuItem value={"matic"}>Polygon</MenuItem>
+            <MenuItem value={"gnosis"}>Gnosis</MenuItem>
             <MenuItem value={"moonbeam"}>Moonbeam</MenuItem>
             <MenuItem value={"cronos"}>Cronos</MenuItem>
-
+            <MenuItem value={"shardeum"}>Shardeum</MenuItem>
           </Select>
         </FormControl>
       </Stack>
@@ -167,6 +186,18 @@ export default function LoginForm() {
       <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
         Verify
       </LoadingButton>
+      {showResult && <div className="container">
+        <div className="label">
+          Please find the contract below:
+        </div>
+        <div className="copy-text">
+          <input type="text" className="text" value="https://fileshare.io/001-510-115" readOnly />
+          <Button >
+            <i className="fa fa-clone" />
+          </Button>
+        </div>
+      </div>}
+
     </>
   );
 }
