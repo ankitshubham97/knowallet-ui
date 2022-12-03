@@ -13,4 +13,5 @@
 - [ ] valist homepage and deployment
 - [ ] assets
 - [ ] metamask snap
+- [ ] modify camera scrreen
 
