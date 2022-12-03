@@ -26,7 +26,7 @@ export default function DashboardAppPage() {
   return (
     <>
       <Helmet>
-        <title> Revert me </title>
+        <title> Dashboard | Minimal UI </title>
       </Helmet>
 
       <Container maxWidth="xl">
