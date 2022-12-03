@@ -5,7 +5,7 @@ import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, Outlin
 import { LoadingButton } from '@mui/lab';
 import { ToastContainer, toast } from 'material-react-toastify';
 import { url } from '../../../constants';
-
+import GetAccount from '../../../hooks/account';
 
 
 import 'material-react-toastify/dist/ReactToastify.css';
@@ -35,21 +35,25 @@ const variants = [
 
 export default function LoginForm() {
   const navigate = useNavigate();
-  const [postForm, setForm] = useState({
-    walletAddress: "",
-    questionId: "",
+  const account = GetAccount();
+  console.log("Requester wallet address: ");
+  console.log(account.props.children);
 
+  const [postForm, setForm] = useState({
+    userWalletAddress: "0x4ad53d31Cb104Cf5f7622f1AF8Ed09C3ca980523",
+    requestorWalletAddress: account.props.children,
+    questionId: 1,
+    chain: ""
   });
 
-  const notify = () => toast("Verification failed for the wallet address");
+
   const [variantName, setVariantName] = useState([]);
+  const [networkName, setNetworkName] = useState([]);
   const handleSubmit = async (e) => {
     console.log("called here")
     console.log(postForm);
     e.preventDefault();
     try {
-      console.log("inside this")
-
       const res = await axios.post(`${url}verify`, postForm, {
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -68,6 +72,13 @@ export default function LoginForm() {
     }
 
 
+  };
+  const handleNetworkChange = (event) => {
+    setNetworkName(event.target.value);
+    setForm({
+      ...postForm,
+      network: event.target.value,
+    });
   };
   const handleTextChange = (event) => {
     setForm({
@@ -126,13 +137,30 @@ export default function LoginForm() {
             ))}
           </Select>
         </FormControl>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label">Network</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={networkName}
+            label="Network"
+            onChange={handleNetworkChange}
+          >
+            <MenuItem value={"Polygon"}>Polygon</MenuItem>
+            <MenuItem value={"Gnosis"}>Gnosis</MenuItem>
+            <MenuItem value={"moonbeam"}>Moonbeam</MenuItem>
+            <MenuItem value={"cronos"}>Cronos</MenuItem>
+
+          </Select>
+        </FormControl>
       </Stack>
 
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+
+      <Stack direction="row" alignItems="center" sx={{ my: 2 }}>
         <Checkbox name="remember" label="Remember me" />
         <Link variant="subtitle2" underline="hover">
-          I agree the terms and conditions
+          I agree to the terms and conditions
         </Link>
       </Stack>
 
