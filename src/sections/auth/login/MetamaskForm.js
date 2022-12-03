@@ -39,7 +39,7 @@ export function MetamaskForm() {
 
     });
 
-    const url = "http://ec2-13-233-6-217.ap-south-1.compute.amazonaws.com:3000/users/";
+    const url = "https://api.app.knowallet.xyz/users/";
 
     const createPost = async (post) => {
         try {
