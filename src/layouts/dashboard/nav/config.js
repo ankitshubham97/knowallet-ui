@@ -13,7 +13,7 @@ const navConfig = [
   },
   {
     title: 'verify',
-    path: '/login',
+    path: '/verify',
     icon: icon('ic_lock'),
   },
   {

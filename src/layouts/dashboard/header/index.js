@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 // utils
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import { bgBlur } from '../../../utils/cssStyles';
 // components
 import Iconify from '../../../components/iconify';
@@ -46,7 +48,10 @@ export default function Header({ onOpenNav }) {
   return (
     <StyledRoot>
       <StyledToolbar>
-        <IconButton
+        <div className='flex flex-row p-3 w-screen absolute z-1 bg-transparent ' style={{ display: 'flex', justifyContent: 'flex-end' }} >
+          <ConnectButton />
+        </div>
+        {/* <IconButton
           onClick={onOpenNav}
           sx={{
             mr: 1,
@@ -71,7 +76,7 @@ export default function Header({ onOpenNav }) {
           <LanguagePopover />
           <NotificationsPopover />
           <AccountPopover />
-        </Stack>
+        </Stack> */}
       </StyledToolbar>
     </StyledRoot>
   );

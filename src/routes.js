@@ -1,7 +1,6 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
-import SimpleLayout from './layouts/simple';
 
 import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
@@ -20,7 +19,7 @@ export default function Router() {
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'metamask', element: <Metamask /> },
-        { path: 'user', element: <UserPage /> },
+        { path: 'verify', element: <LoginPage /> },
       ],
     },
     {
@@ -30,7 +29,7 @@ export default function Router() {
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'metamask', element: <Metamask /> },
-        { path: 'user', element: <UserPage /> },
+        { path: 'verify', element: <LoginPage /> },
       ],
     },
     {

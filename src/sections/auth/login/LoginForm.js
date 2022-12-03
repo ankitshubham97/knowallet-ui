@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import ShowMoreText from "react-show-more-text";
 import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, OutlinedInput, InputLabel, ListItemText, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { ToastContainer, toast } from 'material-react-toastify';
@@ -35,14 +36,10 @@ const variants = [
   },
 ];
 
-export default function LoginForm() {
+export function LoginForm() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const account = GetAccount();
-  const [ethAddress, setETHAddress] = useState('0')
-
-  console.log(account.props.children);
-  
   const [postForm, setForm] = useState({
     userWalletAddress: "",
     requestorWalletAddress: account.props.children,
@@ -58,51 +55,67 @@ export default function LoginForm() {
     console.log(postForm);
     e.preventDefault();
     try {
-      const res = await axios.post(`${url}verify`, postForm, {
+      const res = await axios.post(`${url}users/verify`, postForm, {
         headers: {
           "Access-Control-Allow-Origin": "*",
         }
       });
       console.log(res);
       if (res.data.code === 404) {
-        toast.error("Verification is unsuccessful", { position: toast.POSITION.TOP_CENTER });
+        toast.info("We have asked the end user for his consent, please wait till the user validates it", { position: toast.POSITION.TOP_CENTER });
+        setForm({
+          ...postForm,
+          userWalletAddress: "",
+          requestorWalletAddress: account.props.children,
+          questionId: 1,
+          chain: ""
+        })
       }
       else {
         toast.success("Verification is successful", { position: toast.POSITION.TOP_CENTER });
+        setShowResult(true);
       }
     } catch (error) {
-      toast.error("Verification is unsuccessful", { position: toast.POSITION.TOP_CENTER });
+      toast.error("Verification is unsuccessful, Please try again", { position: toast.POSITION.TOP_CENTER });
       console.log(error.message);
+      setForm({
+        ...postForm,
+        userWalletAddress: "",
+        requestorWalletAddress: account.props.children,
+        questionId: 1,
+        chain: ""
+      })
     }
 
 
   };
   const handleClick = () => {
     setOpen(true);
-    navigator.clipboard.writeText(window.location.toString());
+    navigator.clipboard.writeText('');
   };
   const handleNetworkChange = (event) => {
     setNetworkName(event.target.value);
     setForm({
       ...postForm,
-      network: event.target.value,
+      chain: event.target.value,
     });
   };
   const handleTextChange = (event) => {
-    async function fetchData() {
-      const ethh = await queryENSForETHAddress(event.target.value);
-      console.log('my eth', ethh);
+    if (event.target.value.startsWith("0x")) {
       setForm({
         ...postForm,
-        userWalletAddress: ethh,
+        userWalletAddress: event.target.value,
       });
-      console.log("here============")
-       
+    } else {
+      queryENSForETHAddress(event.target.value).then((address) => {
+        setForm({
+          ...postForm,
+          userWalletAddress: address,
+        });
+      });
     }
-    fetchData();
-
-   
   };
+
   const handleChange = (event) => {
     const {
       target: { value },
@@ -110,12 +123,7 @@ export default function LoginForm() {
 
     console.log(value[0].id);
     setForm({ ...postForm, questionId: value[0].id });
-
-    const filterdValue = value.filter(
-      (item) => variantName.findIndex((o) => o.id === item.id) >= 0
-    );
     let duplicateRemoved = [];
-
     value.forEach((item) => {
       if (duplicateRemoved.findIndex((o) => o.id === item.id) >= 0) {
         duplicateRemoved = duplicateRemoved.filter((x) => x.id === item.id);
@@ -184,17 +192,59 @@ export default function LoginForm() {
       <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
         Verify
       </LoadingButton>
-      {showResult && <div className="container">
-        <div className="label">
-          Please find the contract below:
-        </div>
-        <div className="copy-text">
-          <input type="text" className="text" value="https://fileshare.io/001-510-115" readOnly />
-          <Button >
-            <i className="fa fa-clone" />
-          </Button>
-        </div>
-      </div>}
+      <br />
+      <br />
+      {showResult &&
+        <>
+
+          <a
+            href="https://www.yahoo.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Link to the contract address
+          </a>
+
+          <div className="label">
+            <Button onClick={handleClick}>
+              Copy the call data text
+            </Button>
+          </div>
+          <div className="container">
+
+
+
+            <div className="copy-text">
+              <ShowMoreText
+
+                lines={3}
+                more="Show more"
+                less="Show less"
+                className="content-css"
+                anchorClass="show-more-less-clickable"
+
+                expanded={false}
+
+                truncatedEndingComponent={"... "}
+              >
+                Put labore et dolore magna amet, consectetur adipiscing elit,
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex Lorem ipsum dolor sit amet, consectetur adipiscing
+                elit, sed do eiusmod tempor incididunt ut labore et dolore magna
+                aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                laboris nisi ut aliquip ex Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+                magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+              </ShowMoreText>
+
+            </div>
+
+          </div>
+
+        </>
+
+      }
 
     </>
   );

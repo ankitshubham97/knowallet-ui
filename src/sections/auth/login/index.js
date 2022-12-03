@@ -1,2 +1,2 @@
-export { default as LoginForm } from './LoginForm';
+export { LoginForm } from './LoginForm';
 export { MetamaskForm } from './MetamaskForm';

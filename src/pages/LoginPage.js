@@ -56,14 +56,14 @@ export default function LoginPage() {
           }}
         />
 
-        {mdUp && (
+        {/* {mdUp && (
           <StyledSection>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               One Step verfication of wallets
             </Typography>
             <img src="/assets/mainpage-2.jpg" alt="login" />
           </StyledSection>
-        )}
+        )} */}
 
         <Container maxWidth="sm">
           <StyledContent>
