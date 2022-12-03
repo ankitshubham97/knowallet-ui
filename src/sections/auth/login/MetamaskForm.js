@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { Link, Stack, TextField, FormControl, MenuItem, Select, Checkbox, OutlinedInput, InputLabel, ListItemText } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { CameraFeed } from '../../CameraFeed/CameraFeed';
+import Camera from 'react-html5-camera-photo';
 
-import '../../CameraFeed/camera.css';
+import 'react-html5-camera-photo/build/css/index.css';
+import { da } from 'date-fns/locale';
 
 const ITEM_HEIGHT = 52;
 const ITEM_PADDING_TOP = 12;
@@ -41,9 +42,13 @@ export function MetamaskForm() {
 
     const url = "https://api.app.knowallet.xyz/users/";
 
-    const createPost = async (post) => {
+    const handleSubmit = async (e) => {
+        console.log("called here")
+        console.log(postMForm);
+        e.preventDefault();
         try {
-            const res = await axios.post(url, post, {
+            console.log("inside this")
+            const res = await axios.post(url, postMForm, {
                 headers: {
                     "Access-Control-Allow-Origin": "*",
                 }
@@ -52,12 +57,16 @@ export function MetamaskForm() {
         } catch (error) {
             console.log(error.message);
         }
+        console.log("done here")
+        //   createPost(postMForm);
     };
+    const handleTakePhoto = async (dataUri) => {
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        createPost(postMForm);
-    };
+        console.log(dataUri);
+        setMForm({ ...postMForm, selfieBase64String: dataUri });
+
+
+    }
 
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
@@ -75,56 +84,23 @@ export function MetamaskForm() {
         const file = e.target.files[0];
         const base64 = await convertToBase64(file);
         console.log(base64);
-        setMForm({ ...postMForm, selfieBase64String: base64 });
+        //   setMForm({ ...postMForm, selfieBase64String: base64 });
         setMForm({ ...postMForm, passportBase64String: base64 });
     };
 
-    // const handleClick = () => {
-    //     navigate('/dashboard', { replace: true });
-    // };
-    const [variantName, setVariantName] = useState([]);
-    const handleChange = (event) => {
-        const {
-            target: { value },
-        } = event;
 
-        console.log(value);
-
-        const filterdValue = value.filter(
-            (item) => variantName.findIndex((o) => o.id === item.id) >= 0
-        );
-        let duplicateRemoved = [];
-
-        value.forEach((item) => {
-            if (duplicateRemoved.findIndex((o) => o.id === item.id) >= 0) {
-                duplicateRemoved = duplicateRemoved.filter((x) => x.id === item.id);
-            } else {
-                duplicateRemoved.push(item);
-            }
-        });
-
-        setVariantName(duplicateRemoved);
-    };
     return (
         <>
             <Stack spacing={3}>
 
-                <TextField name="text" label="Name" />
-                <TextField name="text" label="Age" />
-                <TextField name="text" label="DOB" />
+                <div className="App">
 
-            </Stack>
+                    <p>Capture image from USB webcamera and upload to form</p>
+                    <Camera
+                        onTakePhoto={(dataUri) => handleTakePhoto(dataUri)}
+                    />
+                </div>
 
-            <div className="App">
-                <h1>Image capture test</h1>
-                <p>Capture image from USB webcamera and upload to form</p>
-
-            </div>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-                <Checkbox name="remember" label="Remember me" />
-                <Link variant="subtitle2" underline="hover">
-                    I agree the terms and conditions
-                </Link>
             </Stack>
             <input
                 type="file"
@@ -133,6 +109,14 @@ export function MetamaskForm() {
                 accept=".jpeg, .png, .jpg"
                 onChange={(e) => handleFileUpload(e)}
             />
+
+
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+                <Checkbox name="remember" label="Remember me" />
+                <Link variant="subtitle2" underline="hover">
+                    I agree the terms and conditions
+                </Link>
+            </Stack>
 
 
             <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
