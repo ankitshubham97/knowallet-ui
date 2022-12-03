@@ -16,23 +16,20 @@ const StyledRoot = styled('div')(({ theme }) => ({
 }));
 
 const StyledSection = styled('div')(({ theme }) => ({
+
+  marginTop: '0.1px',
   width: '100%',
-  maxWidth: 480,
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
+
   boxShadow: theme.customShadows.card,
   backgroundColor: theme.palette.background.default,
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
   maxWidth: 480,
-  margin: 'auto',
-  minHeight: '100vh',
-  display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column',
-  padding: theme.spacing(12, 0),
+
+
 }));
 
 // ----------------------------------------------------------------------
@@ -65,9 +62,9 @@ export default function LoginPage() {
           </StyledSection>
         )} */}
 
-        <Container maxWidth="sm">
-          <StyledContent>
-            <Typography variant="h4" gutterBottom>
+        <Container maxWidth="sm" style={{ marginLeft: "115px", marginTop: "0.0001px" }}>
+          <StyledContent style={{ marginTop: "0px" }}>
+            <Typography variant="h4" style={{ marginTop: "0px" }} >
               Verify Authentictiy
             </Typography>
 

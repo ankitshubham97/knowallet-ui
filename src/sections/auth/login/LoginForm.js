@@ -26,12 +26,12 @@ const MenuProps = {
 };
 const variants = [
   {
-    id: 3,
+    id: 1,
     name: 'Is Age above 18?',
 
   },
   {
-    id: 10,
+    id: 2,
     name: 'Is user from Asia?',
   },
 ];
@@ -40,21 +40,41 @@ export function LoginForm() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const account = GetAccount();
+  const [loading, setLoading] = useState(false);
   const [postForm, setForm] = useState({
     userWalletAddress: "",
     requestorWalletAddress: account.props.children,
     questionId: 1,
-    chain: ""
+    chain: "matic"
   });
 
   const [showResult, setShowResult] = useState(false);
   const [variantName, setVariantName] = useState([]);
-  const [callData, setCallData] = useState([]);
-  const [chainName, setChainName] = useState([]);
-  const [contract, setContract] = useState([]);
-  const [chainLink, setChainLink] = useState([]);
-  const [networkName, setNetworkName] = useState([]);
+  const [callData, setCallData] = useState("");
+  const [chainName, setChainName] = useState("");
+  const [contract, setContract] = useState("");
+  const [chainLink, setChainLink] = useState("");
+  const [networkName, setNetworkName] = useState("matic");
+  const [question, setQuestion] = useState(1);
+  const [link, setLink] = useState("");
+  const renderSwitch = (param) => {
+    switch (param) {
+      case 'matic':
+        return 'https://mumbai.polygonscan.com/address/';
+      case 'gnosis':
+        return 'https://gnosisscan.io/address/';
+      case 'shardeum':
+        return 'https://explorer-liberty10.shardeum.org/account/';
+      case 'cronos':
+        return 'https://testnet.cronoscan.com/address/';
+      case 'moonbeam':
+        return 'https://moonbase-blockscout.testnet.moonbeam.network/address/';
+      default:
+        return 'foo';
+    }
+  }
   const handleSubmit = async (e) => {
+    setLoading(true);
     console.log("called here")
     console.log(postForm);
     e.preventDefault();
@@ -65,33 +85,34 @@ export function LoginForm() {
         }
       });
       console.log(res);
-      if (res.data.code === 404) {
-        toast.info("We have asked the end user for his consent, please wait till the user validates it", { position: toast.POSITION.TOP_CENTER });
-        setForm({
-          ...postForm,
-          userWalletAddress: "",
-          requestorWalletAddress: account.props.children,
-          questionId: 1,
-          chain: ""
+      if (res.data.code !== 200) {
+        toast.error(res.data.error, {
+          position: toast.POSITION.TOP_CENTER, className: 'toast-message'
         })
       }
       else {
         toast.success("Verification is successful", { position: toast.POSITION.TOP_CENTER });
+        setCallData(res.data.data.calldata);
+        setChainName(res.data.data.network);
+        setContract(res.data.data.contractAddress);
+        const linkTemp = `${renderSwitch(res.data.data.network)}${res.data.data.contractAddress}`;
+        setLink(linkTemp);
+        console.log(res.data.data.calldata);
+        console.log(res.data.data.network);
+        console.log(res.data.data.contractAddress);
         setShowResult(true);
-        setLink("https://" + chainLink + contract)
+        console.log(res.data.data.network);
+
       }
     } catch (error) {
-      toast.error("Verification is unsuccessful, Please try again", { position: toast.POSITION.TOP_CENTER });
+      toast.error("Verification is unsuccessful, Please try again", { position: toast.POSITION.TOP_CENTER }, {
+        style: {
+          minWidth: '250px',
+        }
+      });
       console.log(error.message);
-      setForm({
-        ...postForm,
-        userWalletAddress: "",
-        requestorWalletAddress: account.props.children,
-        questionId: 1,
-        chain: ""
-      })
     }
-
+    setLoading(false);
 
   };
   const handleClick = () => {
@@ -105,66 +126,50 @@ export function LoginForm() {
       chain: event.target.value,
     });
   };
-  const handleTextChange = (event) => {
-    if (event.target.value.startsWith("0x")) {
-      setForm({
-        ...postForm,
-        userWalletAddress: event.target.value,
-      });
-    } else {
+  const handleQuestionChange = (event) => {
+    setQuestion(event.target.value);
+    setForm({
+      ...postForm,
+      questionId: event.target.value,
+    });
+  };
+  const handleTextChange = async (event) => {
+    console.log(event.target.value);
+    if (event.target.value.endsWith(".eth")) {
+
+
       queryENSForETHAddress(event.target.value).then((address) => {
         setForm({
           ...postForm,
           userWalletAddress: address,
         });
       });
+    } else if (event.target.value.startsWith("0x")) {
+      await setForm({
+        ...postForm,
+        userWalletAddress: event.target.value,
+      });
+      console.log("============================")
+      console.log(postForm);
     }
   };
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-
-    console.log(value[0].id);
-    setForm({ ...postForm, questionId: value[0].id });
-    let duplicateRemoved = [];
-    value.forEach((item) => {
-      if (duplicateRemoved.findIndex((o) => o.id === item.id) >= 0) {
-        duplicateRemoved = duplicateRemoved.filter((x) => x.id === item.id);
-      } else {
-        duplicateRemoved.push(item);
-      }
-    });
-
-    setVariantName(duplicateRemoved);
-  };
   return (
     <>
       <Stack spacing={3}>
         <TextField name="text" label="Wallet address" onChange={handleTextChange} />
-        <FormControl sx={{ m: 5, width: 485 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Questions</InputLabel>
+        <FormControl fullWidth>
+          <InputLabel id="demo-simple-select-label1">Question</InputLabel>
           <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={variantName}
-            onChange={handleChange}
-            input={<OutlinedInput label="Questions" />}
-            renderValue={(selected) => selected.map((x) => x.name).join(', ')}
-            MenuProps={MenuProps}
+            labelId="demo-simple-select-label1"
+            id="demo-simple-select1"
+            value={question}
+            label="Question"
+            onChange={handleQuestionChange}
           >
-            {variants.map((variant) => (
-              <MenuItem key={variant.id} value={variant}>
-                <Checkbox
-                  checked={
-                    variantName.findIndex((item) => item.id === variant.id) >= 0
-                  }
-                />
-                <ListItemText primary={variant.name} />
-              </MenuItem>
-            ))}
+            <MenuItem value={1}>Is age above 18?</MenuItem>
+            <MenuItem value={2}>Is user's country in sanction list</MenuItem>
+
           </Select>
         </FormControl>
         <FormControl fullWidth>
@@ -195,26 +200,20 @@ export function LoginForm() {
       </Stack>
 
       <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
-        Verify
+        {loading ? "Loading..." : "Verify"}
       </LoadingButton>
       <br />
       <br />
       {showResult &&
         <>
 
-          <a
-            href={link}
+          <a href={link}
             target="_blank"
             rel="noopener noreferrer"
           >
             Link to the contract address
           </a>
 
-          <div className="label">
-            <Button onClick={handleClick}>
-              Copy the call data text
-            </Button>
-          </div>
           <div className="container">
 
 
@@ -222,7 +221,7 @@ export function LoginForm() {
             <div className="copy-text">
               <ShowMoreText
 
-                lines={3}
+                lines={6}
                 more="Show more"
                 less="Show less"
                 className="content-css"
@@ -232,9 +231,11 @@ export function LoginForm() {
 
                 truncatedEndingComponent={"... "}
               >
-                callData
+                {callData}
               </ShowMoreText>
-
+              <Button onClick={handleClick}>
+                Copy
+              </Button>
             </div>
 
           </div>

@@ -47,9 +47,9 @@ Header.propTypes = {
 export default function Header({ onOpenNav }) {
   return (
     <StyledRoot>
-      <StyledToolbar>
-        <div className='flex flex-row p-3 w-screen absolute z-1 bg-transparent ' style={{ display: 'flex', justifyContent: 'flex-end' }} >
-          <ConnectButton />
+      <StyledToolbar style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <div  >
+          <ConnectButton chainStatus="none" />
         </div>
         {/* <IconButton
           onClick={onOpenNav}

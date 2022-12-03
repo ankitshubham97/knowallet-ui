@@ -18,21 +18,16 @@ const StyledRoot = styled('div')(({ theme }) => ({
 const StyledSection = styled('div')(({ theme }) => ({
     width: '100%',
     maxWidth: 480,
-    display: 'flex',
+
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'left',
     boxShadow: theme.customShadows.card,
     backgroundColor: theme.palette.background.default,
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
     maxWidth: 480,
-    margin: 'auto',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    padding: theme.spacing(12, 0),
+
 }));
 
 // ----------------------------------------------------------------------
@@ -56,7 +51,7 @@ export default function Metamask() {
                 />
 
 
-                <Container maxWidth="sm">
+                <Container maxWidth="sm" style={{ marginLeft: "100px" }}>
                     <StyledContent>
                         <Typography variant="h4" gutterBottom>
                             Metamask

@@ -24,18 +24,7 @@ const MenuProps = {
         },
     },
 };
-const variants = [
-    {
-        id: 3,
-        name: 'Is Age above 18?',
-        cover: null,
-    },
-    {
-        id: 10,
-        name: 'Is user from Asia?',
-        cover: null,
-    },
-];
+
 
 export function MetamaskForm() {
 
@@ -45,7 +34,7 @@ export function MetamaskForm() {
 
         async function fetchData() {
             try {
-                const res = await axios.get(`${url}0x9dC36499A0aB380eeaC69De651811B68beb0a783`, {
+                const res = await axios.get(`${url}users\0x9dC36499A0aB380eeaC69De651811B68beb0a783`, {
                     headers: {
                         "Access-Control-Allow-Origin": "*",
                     }
@@ -158,16 +147,16 @@ export function MetamaskForm() {
                 />
 
 
-                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+                <Stack direction="row" alignItems="center" sx={{ my: 2 }}>
                     <Checkbox name="remember" label="Remember me" />
                     <Link variant="subtitle2" underline="hover">
-                        I agree the terms and conditions
+                        I agree to the terms and conditions
                     </Link>
                 </Stack>
 
 
                 <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleSubmit}>
-                    Submit Details for KYC
+                    Register for KYC
                 </LoadingButton>
             </> :
             <>

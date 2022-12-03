@@ -17,7 +17,7 @@ const navConfig = [
     icon: icon('ic_lock'),
   },
   {
-    title: 'Metamask',
+    title: 'register',
     path: '/metamask',
     icon: icon('ic_user'),
   },
