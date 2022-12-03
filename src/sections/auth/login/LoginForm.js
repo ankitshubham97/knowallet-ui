@@ -39,23 +39,12 @@ export default function LoginForm() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const account = GetAccount();
-  console.log("Requester wallet address: ");
   const [ethAddress, setETHAddress] = useState('0')
 
   console.log(account.props.children);
-  useEffect(() => {
-
-    async function fetchData() {
-      setETHAddress(await queryENSForETHAddress("srijanshetty.eth"));
-    }
-    fetchData();
-    console.log("Requester wallet address: ");
-    console.log(ethAddress);
-
-  }, []);
-
+  
   const [postForm, setForm] = useState({
-    userWalletAddress: "0x4ad53d31Cb104Cf5f7622f1AF8Ed09C3ca980523",
+    userWalletAddress: "",
     requestorWalletAddress: account.props.children,
     questionId: 1,
     chain: ""
@@ -100,10 +89,19 @@ export default function LoginForm() {
     });
   };
   const handleTextChange = (event) => {
-    setForm({
-      ...postForm,
-      walletAddress: event.target.value,
-    });
+    async function fetchData() {
+      const ethh = await queryENSForETHAddress(event.target.value);
+      console.log('my eth', ethh);
+      setForm({
+        ...postForm,
+        userWalletAddress: ethh,
+      });
+      console.log("here============")
+       
+    }
+    fetchData();
+
+   
   };
   const handleChange = (event) => {
     const {
